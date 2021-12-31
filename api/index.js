@@ -41,7 +41,7 @@ bot.on('message', (msg) => {
                 parseFloat(s[1]),
                 parseFloat(s[2])
             ]
-        ).then((jres1)=>{
+        ).then((jres)=>{
                 bot.sendMessage(
                     msg.chat.id,
                     `Prediksi y1 Tegangan ${jres[0]}`
