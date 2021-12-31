@@ -9,7 +9,7 @@ const TelegramBot = require('node-telegram-bot-api');
 const token = '5032006078:AAEqFrvzCagE0LxcTi02wILNgtjAjPQ1r4M'
 const bot = new TelegramBot(token, {polling: true});
 
-state = 0;
+state = 0
 // Main Menu Bot
 bot.onText(/\/start/, (msg) => { 
     bot.sendMessage(
@@ -73,5 +73,4 @@ r.get('/predict/:x1/:x2:x3', function(req, res, next) {
         res.json(jres); // to pc / arduino
     })
 });
-
 module.exports = r;
