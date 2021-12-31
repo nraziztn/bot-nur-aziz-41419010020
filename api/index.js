@@ -3,11 +3,10 @@ var r = express.Router();
 
 // load pre-trained model
 const model = require('./sdk/model.js'); // predict
-const cls_model = require('./sdk/cls_model.js'); // cls
 
 // Bot Setting
 const TelegramBot = require('node-telegram-bot-api');
-const token = '1781217246:AAFHYFBOPzB5DGgqgPVXUotACNdQxRWQ_5I'
+const token = '5032006078:AAEqFrvzCagE0LxcTi02wILNgtjAjPQ1r4M'
 const bot = new TelegramBot(token, {polling: true});
 
 state = 0;
@@ -21,11 +20,11 @@ bot.onText(/\/start/, (msg) => {
     state = 0;
 });
 
-// input requires i and r
+// input requires x1 x2 x3
 bot.onText(/\/predict/, (msg) => { 
     bot.sendMessage(
         msg.chat.id,
-        `masukan nilai i|v contohnya 9|9`
+        `masukan nilai x1|x2|x3 contohnya 9|9|5`
     );   
     state = 1;
 });
@@ -33,92 +32,45 @@ bot.onText(/\/predict/, (msg) => {
 bot.on('message', (msg) => {
     if(state == 1){
         s = msg.text.split("|");
+        x1 = s[0]
+        x2 = s[1]
+        x3 = s[2]
         model.predict(
             [
                 parseFloat(s[0]), // string to float
-                parseFloat(s[1])
+                parseFloat(s[1]),
+                parseFloat(s[2])
             ]
         ).then((jres1)=>{
-            console.log(jres1);
-            
-            cls_model.classify([parseFloat(s[0]), parseFloat(s[1]), parseFloat(jres1[0]), parseFloat(jres1[1])]).then((jres2)=>{
                 bot.sendMessage(
-                        msg.chat.id,
-                        `nilai v yang diprediksi adalah ${jres1[0]} volt`
+                    msg.chat.id,
+                    `Prediksi y1 Tegangan ${jres[0]}`
+                );
+                bot.sendMessage(
+                    msg.chat.id,
+                    `nilai y2 yang diprediksi adalah ${jres[1]}`
                 ); 
                 bot.sendMessage(
                     msg.chat.id,
-                    `nilai p yang diprediksi adalah ${jres1[1]} watt`
-                ); 
-                bot.sendMessage(
-                        msg.chat.id,
-                        `Klasifikasi Tegangan ${jres2}`
+                    `Prediksi y3 ${jres[2]}`
                 );
-                state = 0;
-            })
         })
     }else{
-        bot.sendMessage(
-        msg.chat.id,
-            `Please Click /start`
-        );  
         state = 0;
     }
-    console.log(msg.chat.id);
 })
-
-
-r.get('/test/:key', function(req, res, next){
-    bot.sendMessage(
-            1599833896, //msg.id
-            `${req.params.key}`
-    );
-    res.json(req.params.key);
-});
-
 
 // routers
 // use => ...../api/predict/10/20
-r.get('/predict/:i/:r', function(req, res, next) {    
+r.get('/predict/:x1/:x2:x3', function(req, res, next) {    
     model.predict(
         [
-            parseFloat(req.params.i), // string to float
-            parseFloat(req.params.r)
+            parseFloat(req.params.x1), // string to float
+            parseFloat(req.params.x2),
+            parseFloat(req.params.x3)
         ]
     ).then((jres)=>{
-        bot.sendMessage(
-                1599833896, //msg.id
-                `${jres[0]}|${jres[1]}`
-        ); // to telegram
-        
         res.json(jres); // to pc / arduino
-    })
-});
-
-// routers
-// use => ...../api/classify/10/20
-r.get('/classify/:i/:r', function(req, res, next) {    
-    model.predict(
-        [
-            parseFloat(req.params.i), // string to float
-            parseFloat(req.params.r)
-        ]
-    ).then((jres)=>{
-        cls_model.classify(
-            [
-                parseFloat(req.params.i), // string to float
-                parseFloat(req.params.r),
-                parseFloat(jres[0]),
-                parseFloat(jres[1])
-            ]
-        ).then((jres_)=>{
-            bot.sendMessage(
-                    1599833896, //msg.id
-                    `${jres_}`
-            ); // to telegram
-            
-            res.json({jres, jres_})
-        })
     })
 });
 
