@@ -9,7 +9,7 @@ function normalized(data){ // x1 x2 x3
 
 function denormalized(data){
     y1 = (data[0] * 9.194057) + 74.7862
-    y2 = (data[1] * 14.79373) + 14.79373
+    y2 = (data[1] * 14.79373) + 49.8907
     y3 = (data[2] * 24.03545) + 159.8179
     return [y1, y2, y3]
 }
